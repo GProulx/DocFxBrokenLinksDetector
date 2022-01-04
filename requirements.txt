@@ -1,4 +1,10 @@
+# Code formating
+autopep8==1.6.0
+
+# Libraries
 requests==2.27.0
 beautifulsoup4==4.10.0
 # Specific parser for bs4:
 lxml==4.7.1
+
+urljoin
