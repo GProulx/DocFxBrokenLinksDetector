@@ -7,4 +7,4 @@ beautifulsoup4==4.10.0
 # Specific parser for bs4:
 lxml==4.7.1
 
-urljoin
+urljoin==1.0.0

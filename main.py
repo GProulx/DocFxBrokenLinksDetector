@@ -15,6 +15,7 @@ pages_queue = Queue(maxsize=0)
 pages_history = []
 debug = False
 
+
 def request_page(url):
     try:
         page = requests.get(url, verify=False)
@@ -58,9 +59,13 @@ def is_link_available(link):
         if response == None:
             return False
         else:
-            return response.ok
+            if response.status_code == 401:
+                return True
+            else:
+                return response.ok
+
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return False
 
 
@@ -131,8 +136,8 @@ def main(argv):
     if(url):
         root_url = url
         pages_queue.put(root_url)
-        # pages_queue.put(urljoin(root_url, "/fr/toc.html"))
-        # pages_queue.put(urljoin(root_url, "/en/toc.html"))
+        pages_queue.put(urljoin(root_url, "/fr/toc.html"))
+        pages_queue.put(urljoin(root_url, "/en/toc.html"))
         while (not pages_queue.empty()):
             process_page_queue(root_url)
         print("Process completed!")
