@@ -13,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 pages_queue = Queue(maxsize=0)
 pages_history = []
-
+debug = False
 
 def request_page(url):
     try:
@@ -43,7 +43,7 @@ def is_valid_url(url):
     try:
         return re.match(regex, url) is not None
     except TypeError:
-        print("ERROR - Problem validating url", url)
+        print("[ERROR] Problem validating url", url)
         raise
 
 
@@ -59,7 +59,8 @@ def is_link_available(link):
             return False
         else:
             return response.ok
-    except:
+    except Exception as ex:
+        print(ex)
         return False
 
 
@@ -73,17 +74,22 @@ def process_page_content(url, links):
             link = link.get('href')
             if (is_external_link(url, link)):
                 is_valid = is_link_available(link)
-                print("EXTERNAL LINK:", link, is_valid)
+                if debug:
+                    print("EXTERNAL LINK:", link, is_valid)
+                if not is_valid:
+                    print("[ERROR] EXTERNAL LINK:", link)
             else:
-                print("INTERNAL FULL LINK:", link)
+                if debug:
+                    print("INTERNAL FULL LINK:", link)
         else:
             full_url = urljoin(url, link.get('href'))
-            print(full_url)
+            if debug:
+                print(full_url)
             if is_link_available(full_url):
                 # print()
                 pages_queue.put(full_url)
             else:
-                print("Page", url, "has a broken link pointing to",
+                print("[ERROR] Page", url, "has a broken link pointing to",
                       link.get('href'))
 
 
@@ -98,7 +104,8 @@ def get_page_hash(page_content):
 def process_page_queue(root_url):
     url = pages_queue.get()
 
-    print("Processing page:", url)
+    if debug:
+        print("Processing page:", url)
 
     response = request_page(url)
 
